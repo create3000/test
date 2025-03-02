@@ -10,15 +10,7 @@ const __X_ITE_X3D__ = window [Symbol .for ("X_ITE.X3D-11.2.2")];
 
 /***/ }),
 
-/***/ 254:
-/***/ ((module) => {
-
-"use strict";
-module.exports = __X_ITE_X3D__ .jquery;
-
-/***/ }),
-
-/***/ 295:
+/***/ 184:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 /*! dicom-parser - 1.8.12 - 2023-02-20 | (c) 2017 Chris Hafey | https://github.com/cornerstonejs/dicomParser */
@@ -3974,7 +3966,15 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_zlib__;
 
 /***/ }),
 
-/***/ 389:
+/***/ 254:
+/***/ ((module) => {
+
+"use strict";
+module.exports = __X_ITE_X3D__ .jquery;
+
+/***/ }),
+
+/***/ 434:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var __dirname = "/";
@@ -4011,21 +4011,7 @@ var Ib=[cx,_q,cr,Yr,as,fs,hs,Hu,Su,cx,cx,cx,cx,cx,cx,cx];var Jb=[dx,si,gi,Wh,Kh,
 
 /***/ }),
 
-/***/ 497:
-/***/ (() => {
-
-/* (ignored) */
-
-/***/ }),
-
-/***/ 559:
-/***/ (() => {
-
-/* (ignored) */
-
-/***/ }),
-
-/***/ 631:
+/***/ 460:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var __dirname = "/";
@@ -4059,6 +4045,20 @@ var _a=[yj,od,ef,yj];var $a=[zj,Li,di,bi,Kb,Lb,Mb,Nb,Rc,Sc,Uc,jd,xd,Ye,lf,yd,zd,
 
 /***/ }),
 
+/***/ 497:
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+
+/***/ 559:
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+
 /***/ 722:
 /***/ (() => {
 
@@ -4066,7 +4066,7 @@ var _a=[yj,od,ef,yj];var $a=[zj,Li,di,bi,Kb,Lb,Mb,Nb,Rc,Sc,Uc,jd,xd,Ye,lf,yd,zd,
 
 /***/ }),
 
-/***/ 759:
+/***/ 876:
 /***/ ((module) => {
 
 /* -*- tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- /
@@ -7310,10 +7310,10 @@ var Decoder = class _Decoder {
 
 //# 
 ;// ./src/x_ite/Browser/Texturing3D/DICOMParser.js
-/* provided dependency */ var dicomParser = __webpack_require__(295);
-/* provided dependency */ var JpegImage = __webpack_require__(759);
-/* provided dependency */ var CharLS = __webpack_require__(389);
-/* provided dependency */ var OpenJPEG = __webpack_require__(631);
+/* provided dependency */ var dicomParser = __webpack_require__(184);
+/* provided dependency */ var JpegImage = __webpack_require__(876);
+/* provided dependency */ var CharLS = __webpack_require__(434);
+/* provided dependency */ var OpenJPEG = __webpack_require__(460);
 /*******************************************************************************
  *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.

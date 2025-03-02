@@ -210,6 +210,9 @@ const Fonts = new Map ([
 
 function X3DFontStyleNode (executionContext)
 {
+   // To be of type X3DUrlObject ensures that it will work inside StaticGroup
+   // and legacy implementation of load URLs over family field.
+
    external_X_ITE_X3D_X3DNode_default().call (this, executionContext);
    external_X_ITE_X3D_X3DUrlObject_default().call (this, executionContext);
 
@@ -223,8 +226,7 @@ function X3DFontStyleNode (executionContext)
 
    this ._family .setName ("family");
 
-   this .familyStack = [ ];
-   this .alignments  = [ ];
+   this .alignments = [ ];
 }
 
 Object .assign (Object .setPrototypeOf (X3DFontStyleNode .prototype, (external_X_ITE_X3D_X3DNode_default()).prototype),
@@ -17826,29 +17828,37 @@ Object .assign (X3DTextContext .prototype,
    },
    registerFont (font)
    {
-      for (const name of Object .values (font .names))
+      const fullNames = new Set (Object .values (font .names)
+         .flatMap (name => Object .values (name .fullName ?? { })));
+
+      for (const fullName of fullNames)
       {
-         for (const fullName of Object .values (name .fullName ?? { }))
+         // if (this .getBrowserOption ("Debug"))
+         //    console .info (`Registering font named ${fullName}.`);
+
+         this [_fullNameCache] .set (fullName .toLowerCase (), font);
+      }
+
+      const fontFamilies = new Set (Object .values (font .names)
+         .flatMap (name => Object .values (name .fontFamily ?? { }) .map (fontFamily => [name, fontFamily])));
+
+      for (const [name, fontFamily] of fontFamilies)
+      {
+         const subfamilies = this [_familyCache] .get (fontFamily .toLowerCase ()) ?? new Map ();
+
+         this [_familyCache] .set (fontFamily .toLowerCase (), subfamilies);
+
+         for (const subfamily of new Set (Object .values (name .fontSubfamily ?? { })))
          {
             if (this .getBrowserOption ("Debug"))
-               console .info (`Registering font ${fullName}.`);
+               console .info (`Registering font family ${fontFamily} - ${subfamily}.`);
 
-            this [_fullNameCache] .set (fullName .toLowerCase (), font);
+            subfamilies .set (subfamily .toLowerCase () .replaceAll (" ", ""), font);
          }
-
-         for (const fontFamily of Object .values (name .fontFamily ?? { }))
-         {
-            const subfamilies = this [_familyCache] .get (fontFamily .toLowerCase ()) ?? new Map ();
-
-            this [_familyCache] .set (fontFamily .toLowerCase (), subfamilies);
-
-            for (const subfamily of Object .values (name .fontSubfamily ?? { }))
-               subfamilies .set (subfamily .toLowerCase () .replaceAll (" ", ""), font);
-         }
-
-         // console .log (name .preferredFamily);
-         // console .log (name .preferredSubfamily);
       }
+
+      // console .log (name .preferredFamily);
+      // console .log (name .preferredSubfamily);
    },
    loadFont (url, cache = true)
    {
