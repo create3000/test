@@ -182,6 +182,7 @@ var external_X_ITE_X3D_URLs_default = /*#__PURE__*/__webpack_require__.n(externa
 
 
 
+
 /*
  * Font paths for default SERIF, SANS and TYPEWRITER families.
  */
@@ -214,7 +215,14 @@ function X3DFontStyleNode (executionContext)
 
    this .addType ((external_X_ITE_X3D_X3DConstants_default()).X3DFontStyleNode);
 
-   this .font        = null;
+   this .addChildObjects ((external_X_ITE_X3D_X3DConstants_default()).inputOutput, "description",          new (external_X_ITE_X3D_Fields_default()).SFString (),
+                          (external_X_ITE_X3D_X3DConstants_default()).inputOutput, "url",                  this ._family,
+                          (external_X_ITE_X3D_X3DConstants_default()).inputOutput, "load",                 new (external_X_ITE_X3D_Fields_default()).SFBool (true),
+                          (external_X_ITE_X3D_X3DConstants_default()).inputOutput, "autoRefresh",          new (external_X_ITE_X3D_Fields_default()).SFTime (0),
+                          (external_X_ITE_X3D_X3DConstants_default()).inputOutput, "autoRefreshTimeLimit", new (external_X_ITE_X3D_Fields_default()).SFTime (3600));
+
+   this ._family .setName ("family");
+
    this .familyStack = [ ];
    this .alignments  = [ ];
 }
@@ -227,7 +235,6 @@ Object .assign (Object .setPrototypeOf (X3DFontStyleNode .prototype, (external_X
       external_X_ITE_X3D_X3DNode_default().prototype .initialize .call (this);
       external_X_ITE_X3D_X3DUrlObject_default().prototype .initialize .call (this);
 
-      this ._family  .addInterest ("set_url__",     this);
       this ._style   .addInterest ("set_url__",     this);
       this ._justify .addInterest ("set_justify__", this);
 
