@@ -6,7 +6,7 @@ categories: []
 tags: [Playground]
 permalink: /
 ---
-<span>If you are not redirected automatically use the following <a id="redirect-link">link</a>.</span>
+<span>If you are not redirected automatically use the following <a id="redirect-link" href="#">link</a>.</span>
 
 <script type="module">
 const
