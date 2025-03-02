@@ -4,40 +4,10 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Make Dist",
+            "label": "Make X_ITE for Test",
             "type": "shell",
-            "command": "npm run dist",
-            "problemMatcher": [],
-        },
-        {
-            "label": "Publish X_ITE",
-            "type": "shell",
-            "command": "npm run release",
+            "command": "npm run make-x_ite-for-test",
             "problemMatcher": []
-        },
-        {
-            "label": "Checkout Dist",
-            "type": "shell",
-            "command": "git checkout -- dist",
-            "problemMatcher": [],
-        },
-        {
-            "label": "Git List Untracked Files",
-            "type": "shell",
-            "command": "git ls-files --others --exclude-standard",
-            "problemMatcher": []
-        },
-        {
-            "label": "X_ITE Docs",
-            "type": "shell",
-            "command": "npm run docs",
-            "problemMatcher": [],
-            "options": {
-                "shell": {
-                    "executable": "zsh",
-                    "args": ["-c"]
-                }
-            }
         }
     ]
 }

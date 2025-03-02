@@ -270,12 +270,12 @@ Object .assign (Object .setPrototypeOf (X3DFontStyleNode .prototype, (external_X
    {
       return this .font;
    },
-   getDefaultFont (familyName)
+   getDefaultFont (familyName, style)
    {
       const family = Fonts .get (familyName);
 
       if (family)
-         return family .get (this ._style .getValue ()) ?? family .get ("PLAIN");
+         return family .get (style) ?? family .get ("PLAIN");
 
       return;
    },
@@ -324,13 +324,16 @@ Object .assign (Object .setPrototypeOf (X3DFontStyleNode .prototype, (external_X
 
       const
          browser = this .getBrowser (),
-         family  = this ._family .copy ();
+         family  = this ._family .copy (),
+         style   = this ._style .getValue ();
 
       family .push ("SERIF");
 
+      this .font = null;
+
       for (const familyName of family)
       {
-         const defaultFont = this .getDefaultFont (familyName);
+         const defaultFont = this .getDefaultFont (familyName, style);
 
          if (defaultFont)
          {
@@ -343,7 +346,7 @@ Object .assign (Object .setPrototypeOf (X3DFontStyleNode .prototype, (external_X
             }
          }
 
-         const font = await browser .getFont (familyName, this ._style .getValue ());
+         const font = await browser .getFont (familyName, style);
 
          if (font)
          {
@@ -351,13 +354,13 @@ Object .assign (Object .setPrototypeOf (X3DFontStyleNode .prototype, (external_X
             break;
          }
 
-         if (familyName .match (/\.(?:woff2|woff|otf|ttf)/))
+         const fileURL = new URL (familyName, this .getExecutionContext () .getBaseURL ());
+
+         if (fileURL .pathname .match (/\.(?:woff2|woff|otf|ttf)$/i))
          {
             console .warn (`Loading font file via family field is depreciated, please use new FontLibrary node instead.`);
 
-            const
-               fileURL = new URL (familyName, this .getExecutionContext () .getBaseURL ()),
-               font    = await this .loadFont (fileURL);
+            const font = await this .loadFont (fileURL);
 
             if (font)
             {
@@ -365,9 +368,13 @@ Object .assign (Object .setPrototypeOf (X3DFontStyleNode .prototype, (external_X
                break;
             }
          }
+         else
+         {
+            console .warn (`Couldn't find font family '${familyName}' with style '${style}'.`);
+         }
       }
 
-      this .setLoadState ((external_X_ITE_X3D_X3DConstants_default()).COMPLETE_STATE);
+      this .setLoadState (this .font ? (external_X_ITE_X3D_X3DConstants_default()).COMPLETE_STATE : (external_X_ITE_X3D_X3DConstants_default()).FAILED_STATE);
       this .addNodeEvent ();
    },
    async loadFont (fontPath)
@@ -17833,7 +17840,7 @@ Object .assign (X3DTextContext .prototype,
          for (const fullName of Object .values (name .fullName ?? { }))
          {
             if (this .getBrowserOption ("Debug"))
-               console .info (`Register font ${fullName}`);
+               console .info (`Registering font ${fullName}.`);
 
             this [_fullNameCache] .set (fullName .toLowerCase (), font);
          }
@@ -17856,7 +17863,7 @@ Object .assign (X3DTextContext .prototype,
    {
       url = String (url);
 
-      let promise = this [_fontCache] .get (url);
+      let promise = cache ? this [_fontCache] .get (url) : null;
 
       if (!promise)
       {
