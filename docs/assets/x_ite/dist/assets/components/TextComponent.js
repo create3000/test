@@ -2,8 +2,40 @@
 const __X_ITE_X3D__ = window [Symbol .for ("X_ITE.X3D-11.2.2")];
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
-/******/ 	// The require scope
-/******/ 	var __webpack_require__ = {};
+/******/ 	var __webpack_modules__ = ({
+
+/***/ 254:
+/***/ ((module) => {
+
+module.exports = __X_ITE_X3D__ .jquery;
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
@@ -129,6 +161,7 @@ var external_X_ITE_X3D_X3DConstants_default = /*#__PURE__*/__webpack_require__.n
 const external_X_ITE_X3D_URLs_namespaceObject = __X_ITE_X3D__ .URLs;
 var external_X_ITE_X3D_URLs_default = /*#__PURE__*/__webpack_require__.n(external_X_ITE_X3D_URLs_namespaceObject);
 ;// ./src/x_ite/Components/Text/X3DFontStyleNode.js
+/* provided dependency */ var $ = __webpack_require__(254);
 /*******************************************************************************
  *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -311,7 +344,9 @@ Object .assign (Object .setPrototypeOf (X3DFontStyleNode .prototype, (external_X
    },
    async loadData ()
    {
-      await new Promise (resolve => setTimeout (resolve, 0));
+      // Wait for FontLibrary nodes to be setuped or changed.
+
+      await $.sleep (0);
 
       // Add default font to family array.
 
@@ -351,7 +386,7 @@ Object .assign (Object .setPrototypeOf (X3DFontStyleNode .prototype, (external_X
 
          if (fileURL .pathname .match (/\.(?:woff2|woff|otf|ttf)$/i))
          {
-            console .warn (`Loading font file via family field is depreciated, please use new FontLibrary node instead.`);
+            console .warn (`Loading a font file via family field is depreciated, please use new FontLibrary node instead.`);
 
             const font = await this .loadFont (fileURL);
 
@@ -384,8 +419,6 @@ Object .assign (Object .setPrototypeOf (X3DFontStyleNode .prototype, (external_X
       {
          if (fileURL .protocol !== "data:")
             console .warn (`Error loading font '${decodeURI (fileURL .href)}':`, error);
-
-         return false;
       }
    },
    dispose ()
@@ -17785,19 +17818,19 @@ function loadSync() {
 
 const
    _defaultFontStyle = Symbol (),
-   _loadingFonts     = Symbol (),
-   _fullNameCache    = Symbol (),
-   _familyCache      = Symbol (),
    _fontCache        = Symbol (),
+   _loadingFonts     = Symbol (),
+   _familyCache      = Symbol (),
+   _fullNameCache    = Symbol (),
    _glyphCache       = Symbol (),
    _wawoff2          = Symbol ();
 
 function X3DTextContext ()
 {
-   this [_loadingFonts]  = new Set ();
-   this [_fullNameCache] = new Map ();
-   this [_familyCache]   = new Map ();
    this [_fontCache]     = new Map ();
+   this [_loadingFonts]  = new Set ();
+   this [_familyCache]   = new Map ();
+   this [_fullNameCache] = new Map ();
    this [_glyphCache]    = new Map (); // [font] [primitiveQuality] [glyphIndex]
 }
 
@@ -17814,51 +17847,6 @@ Object .assign (X3DTextContext .prototype,
       Object .defineProperty (this, "getDefaultFontStyle", { enumerable: false });
 
       return this [_defaultFontStyle];
-   },
-   async getFont (familyName, style)
-   {
-      familyName = familyName .toLowerCase ();
-      style      = style .toLowerCase () .replaceAll (" ", "");
-
-      await Promise .allSettled (this [_loadingFonts]);
-
-      return this [_familyCache] .get (familyName) ?.get (style)
-         ?? this [_fullNameCache] .get (familyName)
-         ?? null;
-   },
-   registerFont (font)
-   {
-      const fullNames = new Set (Object .values (font .names)
-         .flatMap (name => Object .values (name .fullName ?? { })));
-
-      for (const fullName of fullNames)
-      {
-         // if (this .getBrowserOption ("Debug"))
-         //    console .info (`Registering font named ${fullName}.`);
-
-         this [_fullNameCache] .set (fullName .toLowerCase (), font);
-      }
-
-      const fontFamilies = new Set (Object .values (font .names)
-         .flatMap (name => Object .values (name .fontFamily ?? { }) .map (fontFamily => [name, fontFamily])));
-
-      for (const [name, fontFamily] of fontFamilies)
-      {
-         const subfamilies = this [_familyCache] .get (fontFamily .toLowerCase ()) ?? new Map ();
-
-         this [_familyCache] .set (fontFamily .toLowerCase (), subfamilies);
-
-         for (const subfamily of new Set (Object .values (name .fontSubfamily ?? { })))
-         {
-            if (this .getBrowserOption ("Debug"))
-               console .info (`Registering font family ${fontFamily} - ${subfamily}.`);
-
-            subfamilies .set (subfamily .toLowerCase () .replaceAll (" ", ""), font);
-         }
-      }
-
-      // console .log (name .preferredFamily);
-      // console .log (name .preferredSubfamily);
    },
    loadFont (url, cache = true)
    {
@@ -17905,6 +17893,55 @@ Object .assign (X3DTextContext .prototype,
       }
 
       return promise;
+   },
+   registerFont (font)
+   {
+      // fontFamily - subfamily
+
+      const fontFamilies = new Map (Object .values (font .names)
+         .flatMap (name => Object .values (name .fontFamily ?? { }) .map (fontFamily => [fontFamily, name])));
+
+      for (const [fontFamily, name] of fontFamilies)
+      {
+         const subfamilies = this [_familyCache] .get (fontFamily .toLowerCase ()) ?? new Map ();
+
+         this [_familyCache] .set (fontFamily .toLowerCase (), subfamilies);
+
+         for (const subfamily of new Set (Object .values (name .fontSubfamily ?? { })))
+         {
+            if (this .getBrowserOption ("Debug"))
+               console .info (`Registering font family ${fontFamily} - ${subfamily}.`);
+
+            subfamilies .set (subfamily .toLowerCase () .replaceAll (" ", ""), font);
+         }
+      }
+
+      // fullName
+
+      const fullNames = new Set (Object .values (font .names)
+         .flatMap (name => Object .values (name .fullName ?? { })));
+
+      for (const fullName of fullNames)
+      {
+         // if (this .getBrowserOption ("Debug"))
+         //    console .info (`Registering font named ${fullName}.`);
+
+         this [_fullNameCache] .set (fullName .toLowerCase (), font);
+      }
+
+      // console .log (name .preferredFamily);
+      // console .log (name .preferredSubfamily);
+   },
+   async getFont (familyName, style)
+   {
+      familyName = familyName .toLowerCase ();
+      style      = style .toLowerCase () .replaceAll (" ", "");
+
+      await Promise .allSettled (this [_loadingFonts]);
+
+      return this [_familyCache] .get (familyName) ?.get (style)
+         ?? this [_fullNameCache] .get (familyName)
+         ?? null;
    },
    getGlyph (font, primitiveQuality, glyphIndex)
    {
@@ -18007,6 +18044,10 @@ const X3DTextContext_default_ = X3DTextContext;
 
 
 
+/**
+ * THIS NODE IS STILL EXPERIMENTAL.
+ */
+
 function FontLibrary (executionContext)
 {
    external_X_ITE_X3D_X3DNode_default().call (this, executionContext);
@@ -18027,9 +18068,11 @@ Object .assign (Object .setPrototypeOf (FontLibrary .prototype, (external_X_ITE_
    },
    async loadData ()
    {
-      const browser = this .getBrowser ();
+      const
+         browser  = this .getBrowser (),
+         fileURLs = this ._url .map (fileURL => new URL (fileURL, this .getExecutionContext () .getBaseURL ()));
 
-      for (const fileURL of this ._url .map (fileURL => new URL (fileURL, this .getExecutionContext () .getBaseURL ())))
+      for (const fileURL of fileURLs)
       {
          try
          {
